@@ -1,0 +1,99 @@
+##猫扑素数的Java实现
+最近在准备面试找工作,突然看到猫扑素数的面试题,特此写一篇简单的文章来记录一下素数和猫扑数的相关知识.本文内容会一步一步的给出具体实现.
+###什么是素数
+***
+**质数**（prime number）又称**素数**，有无限个。质数定义为在<font color='red'>**大于1**</font>的自然数中，除了1和它本身以外不再有其他因数。
+一个大于1的自然数，除了1和它自身外，不能被其他自然数整除的数叫做质数；否则称为合数。所以请注意! <font color='red'>**1不是素数!!**</font>
+***
+###素数的代码实现
+我们知道什么是素数之后就可以来编写对应的代码实现了,通常去求1到N之间的素数可以通过遍历1到N的数,然后继续循环除以1到N判断是否能整除,也就是代码中的取余是否大于0,但是这种遍历所有数的效率比较低下,所以根据数学原理,一般都是只需要遍历到N的开根号数即可.下面是求指定范围内的所有素数的代码实现.
+
+```
+/**
+     * 检测一个数是否为素数
+     * @param number 被检测的数
+     * @return true为素数,反之.
+     */
+    public static boolean isPrimeNumber(long number){
+        if (number == 1) return false;
+        long midNumber = (long) Math.sqrt(number);
+        for (long i = 2; i <= midNumber ; i++) {
+            if (number % i == 0)
+                return false;
+        }
+        return true;
+    }
+
+    /**
+     * 获取制定范围内的所有素数
+     * @param startNum 数值区间的起点
+     * @param endNum 数值区间的终点
+     * @return 返回当前区间的所有素数
+     */
+    public static List<Long> getAllPrimeNumber(long startNum, long endNum){
+        List<Long> resultList = new ArrayList<>();
+        for (long i = startNum; i <= endNum; i++) {
+            if (isPrimeNumber(i)) {
+                resultList.add(i);
+                System.out.println("found Prime Number : " + i);
+            }
+        }
+        return resultList;
+    }
+```
+
+###什么是猫扑数
+***
+猫扑数就是以2开头后面有0到N个3的数,也就是
+2,  23,  233, 2333, 23333, 233333等这些都是猫扑数,猫扑素数的话也就是在猫扑数的基础上判断是否为素数,比如 233333 不是素数, 它可以分解为 353 x 661.
+理解了这些概念之后,我们可以写出完整的猫扑素数的实现代码了.如下所示
+```Java
+  /**
+     * 递归实现判断是否为猫扑数
+     * 例如2,23, 233, 2333, 23333,即2后面跟若干个3为猫扑数
+     * @param number 输入数
+     * @return true为猫扑数,反之.
+     */
+    public static boolean isMopNumber( long number ){
+        if (number < 0) return false;
+        if (number < 10) {
+            return number == 2;
+        }
+        return number % 10 == 3 && isMopNumber( number / 10 );
+    }
+
+    /**
+     * 判断一个数是否为猫扑素数
+     * @param number 输入数
+     * @return true为猫扑素数,反之.
+     */
+    public static boolean isMopPrimeNumber( long number ) {
+        return isMopNumber(number) && PrimeNumberChecker.isPrimeNumber(number);
+    }
+
+    /**
+     * 获取指定范围内所有的猫扑素数
+     * @param startNum 数值区间的起点数
+     * @param endNum 数值区间的终点数
+     * @return 指定范围内的所有猫扑素数
+     */
+    public static List<Long> getAllMopPrimeNumber( long startNum, long endNum ) {
+        if (startNum < 0 || endNum < 0) {
+            return null;
+        }
+        List<Long> resultList = new ArrayList<>();
+        startNum = startNum < 2 ? 2 : startNum;
+        for (long i = startNum; i <= endNum; i ++ ) {
+            if (isMopPrimeNumber(i)) {
+                resultList.add(i);
+                System.out.println("found Mop Prime Number : " + i);
+            }
+        }
+        return resultList;
+    }
+```
+最后的运行,结果,我们查找1到1000000之间所有的猫扑素数.
+```Java
+ MopPrimeNumChecker.getAllMopPrimeNumber(1, 1000000);
+```
+![resutl](mop_prime_result.png)
